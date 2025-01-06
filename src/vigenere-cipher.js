@@ -20,13 +20,60 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(isDirect = true) {
+    this.isDirect = isDirect;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(message, key) {
+    if (!message || !key) throw new Error('Incorrect arguments!');
+
+    message = message.toUpperCase();
+    key = key.toUpperCase();
+
+    let encryptedMessage = '';
+    let keyIndex = 0;
+
+    for (let i = 0; i < message.length; i++) {
+      const char = message[i];
+      
+      if (char >= 'A' && char <= 'Z') {
+        const shift = key[keyIndex % key.length].charCodeAt(0) - 'A'.charCodeAt(0);
+        const encryptedChar = String.fromCharCode((char.charCodeAt(0) - 'A'.charCodeAt(0) + shift) % 26 + 'A'.charCodeAt(0));
+        encryptedMessage += encryptedChar;
+
+        keyIndex++;
+      } else {
+        encryptedMessage += char;
+      }
+    }
+
+    return this.isDirect ? encryptedMessage : encryptedMessage.split('').reverse().join('');
+  }
+
+  decrypt(encryptedMessage, key) {
+    if (!encryptedMessage || !key) throw new Error('Incorrect arguments!');
+
+    encryptedMessage = encryptedMessage.toUpperCase();
+    key = key.toUpperCase();
+
+    let message = '';
+    let keyIndex = 0;
+
+    for (let i = 0; i < encryptedMessage.length; i++) {
+      const char = encryptedMessage[i];
+      
+      if (char >= 'A' && char <= 'Z') {
+        const shift = key[keyIndex % key.length].charCodeAt(0) - 'A'.charCodeAt(0);
+        const decryptedChar = String.fromCharCode((char.charCodeAt(0) - 'A'.charCodeAt(0) - shift + 26) % 26 + 'A'.charCodeAt(0));
+        message += decryptedChar;
+
+        keyIndex++;
+      } else {
+        message += char;
+      }
+    }
+
+    return this.isDirect ? message : message.split('').reverse().join('');
   }
 }
 
